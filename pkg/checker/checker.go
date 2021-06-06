@@ -6,21 +6,27 @@ import (
 	"github.com/ryanchew3/flexera-coding-challenge/internal/model"
 )
 
-func processChecks(in map[int64][]*model.Computer) int {
-
+// getKeys gets the keys of in incoming mapstructure
+func getKeys(in map[int64][]*model.Computer) []int64 {
 	keys := make([]int64, len(in))
 	i := 0
 	for k := range in {
 		keys[i] = k
 		i++
 	}
+	return keys
+}
+
+// ProcessChecks processes the list of user owned machines and calculates how many licences are needed
+func ProcessChecks(in map[int64][]*model.Computer) int {
+	keys := getKeys(in)
 
 	totalLicences := 0
 
 	for _, k := range keys {
 		numLaptops := 0
 		numDesktops := 0
-		var id map[int64]rune
+		id := make(map[int64]rune)
 
 		for _, c := range in[k] {
 			_, ok := id[c.Id]
@@ -35,12 +41,11 @@ func processChecks(in map[int64][]*model.Computer) int {
 			}
 		}
 
-		numDesktops -= numLaptops
+		numDesktops = numDesktops - numLaptops
 		if numDesktops < 0 {
 			numDesktops = 0
 		}
-		totalLicences = numDesktops + numLaptops
+		totalLicences = totalLicences + numDesktops + numLaptops
 	}
-
 	return totalLicences
 }
